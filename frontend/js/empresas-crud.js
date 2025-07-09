@@ -1,14 +1,10 @@
-// assets/js/empresas-crud.js
-
 const API_BASE_URL = 'http://localhost:8080';
 
-// Função para carregar e exibir as empresas na tabela
 async function carregarEmpresas() {
     try {
         const response = await fetch(`${API_BASE_URL}/empresas/listar`);
-        // Verifica se a resposta foi bem-sucedida (status 2xx)
+        
         if (!response.ok) {
-            // Se a lista estiver vazia (204 No Content), o fetch ainda pode ser ok, mas sem corpo.
             if (response.status === 204) {
                 console.log('Nenhuma empresa encontrada.');
                 document.querySelector('#dataTable tbody').innerHTML = '<tr><td colspan="5">Nenhuma empresa cadastrada.</td></tr>';
@@ -16,30 +12,36 @@ async function carregarEmpresas() {
             }
             throw new Error(`Erro HTTP! Status: ${response.status}`);
         }
-
-        const empresas = await response.json(); // Converte a resposta para JSON
-        const tbody = document.querySelector('#dataTable tbody'); // Seleciona o corpo da tabela
-        tbody.innerHTML = ''; // Limpa o corpo da tabela antes de preencher
+        
+        const empresas = await response.json(); 
+        const tbody = document.querySelector('#dataTable tbody'); 
+        tbody.innerHTML = ''; 
 
         empresas.forEach(empresa => {
-            const row = tbody.insertRow(); // Insere uma nova linha
+            const row = tbody.insertRow(); 
             row.insertCell().textContent = empresa.id;
             row.insertCell().textContent = empresa.razaoSocial;
             row.insertCell().textContent = empresa.nomeFantasia;
             row.insertCell().textContent = empresa.cnpj;
 
-            // Coluna de Ações (botões de Editar/Excluir para cada linha)
             const acoesCell = row.insertCell();
+            
+            const btnVisualizar = document.createElement('button');
+            btnVisualizar.textContent = 'Visualizar';
+            btnVisualizar.className = 'btn btn-sm btn-success me-1';
+            btnVisualizar.addEventListener('click', () => visualizarEmpresa(empresa.id));
+            acoesCell.appendChild(btnVisualizar);
+
             const btnEditar = document.createElement('button');
             btnEditar.textContent = 'Editar';
-            btnEditar.className = 'btn btn-sm btn-info me-1'; // Estilo Bootstrap
-            btnEditar.addEventListener('click', () => editarEmpresa(empresa.id)); // Chama função de edição
+            btnEditar.className = 'btn btn-sm btn-info me-1';
+            btnEditar.addEventListener('click', () => editarEmpresa(empresa.id));
             acoesCell.appendChild(btnEditar);
 
             const btnExcluir = document.createElement('button');
             btnExcluir.textContent = 'Excluir';
-            btnExcluir.className = 'btn btn-sm btn-danger'; // Estilo Bootstrap
-            btnExcluir.addEventListener('click', () => excluirEmpresa(empresa.id)); // Chama função de exclusão
+            btnExcluir.className = 'btn btn-sm btn-danger';
+            btnExcluir.addEventListener('click', () => excluirEmpresa(empresa.id));
             acoesCell.appendChild(btnExcluir);
         });
 
@@ -49,55 +51,118 @@ async function carregarEmpresas() {
     }
 }
 
-// Funções placeholder para as operações CRUD que você fará a seguir
 function novaEmpresa() {
-    alert('Funcionalidade de Nova Empresa (formulário) será implementada aqui.');
-    // Aqui você abrirá um modal ou redirecionará para um formulário
+    window.location.href = 'empresa-cadastro.html';
 }
 
 function editarEmpresa(id) {
-    alert(`Funcionalidade de Editar Empresa ID: ${id} será implementada aqui.`);
-    // Aqui você buscará os dados da empresa pelo ID e preencherá um formulário de edição
+    window.location.href = `empresa-cadastro.html?id=${id}`;
 }
 
-function excluirEmpresa(id) {
+function visualizarEmpresa(id) {
+    window.location.href = `empresa-detalhes.html?id=${id}`;
+}
+
+async function excluirEmpresa(id) {
     if (confirm(`Tem certeza que deseja excluir a empresa ID: ${id}?`)) {
-        // Lógica para chamar o endpoint DELETE
-        alert(`Funcionalidade de Excluir Empresa ID: ${id} será implementada aqui.`);
-        // Depois de excluir, recarregar a lista
-        // carregarEmpresas();
+        try {
+            const response = await fetch(`${API_BASE_URL}/empresas/excluir/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.status === 204) { 
+                alert('Empresa excluída com sucesso!');
+                carregarEmpresas(); 
+            } else if (response.status === 404) {
+                alert('Empresa não encontrada para exclusão.');
+            } else {
+                throw new Error(`Erro ao excluir empresa! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Erro ao excluir empresa:", error);
+            alert(`Erro ao excluir empresa: ${error.message}`);
+        }
     }
 }
 
-function verDetalhesEmpresa(id) {
-    alert(`Funcionalidade de Ver Detalhes da Empresa ID: ${id} será implementada aqui.`);
-    // Aqui você buscará os dados da empresa e os exibirá em um modal ou seção de detalhes
+async function buscarEmpresas() {
+    const termoBusca = document.getElementById('campoBuscaEmpresa').value.trim();
+    let url;
+
+    if (termoBusca) 
+        url = `${API_BASE_URL}/empresas/buscar?query=${encodeURIComponent(termoBusca)}`;
+    else 
+        url = `${API_BASE_URL}/empresas/listar`;
+    
+
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            if (response.status === 204) {
+                console.log('Nenhuma empresa encontrada para o termo de busca.');
+                document.querySelector('#dataTable tbody').innerHTML = '<tr><td colspan="5">Nenhuma empresa encontrada.</td></tr>';
+                return;
+            }
+            throw new Error(`Erro HTTP ao buscar empresas! Status: ${response.status}`);
+        }
+        const empresas = await response.json();
+        const tbody = document.querySelector('#dataTable tbody');
+        tbody.innerHTML = ''; 
+
+        empresas.forEach(empresa => {
+            const row = tbody.insertRow();
+            row.insertCell().textContent = empresa.id;
+            row.insertCell().textContent = empresa.razaoSocial;
+            row.insertCell().textContent = empresa.nomeFantasia;
+            row.insertCell().textContent = empresa.cnpj;
+
+            const acoesCell = row.insertCell();
+            const btnVisualizar = document.createElement('button');
+            btnVisualizar.textContent = 'Visualizar';
+            btnVisualizar.className = 'btn btn-sm btn-success me-1';
+            btnVisualizar.addEventListener('click', () => visualizarEmpresa(empresa.id));
+            acoesCell.appendChild(btnVisualizar);
+
+            const btnEditar = document.createElement('button');
+            btnEditar.textContent = 'Editar';
+            btnEditar.className = 'btn btn-sm btn-info me-1';
+            btnEditar.addEventListener('click', () => editarEmpresa(empresa.id));
+            acoesCell.appendChild(btnEditar);
+
+            const btnExcluir = document.createElement('button');
+            btnExcluir.textContent = 'Excluir';
+            btnExcluir.className = 'btn btn-sm btn-danger';
+            btnExcluir.addEventListener('click', () => excluirEmpresa(empresa.id));
+            acoesCell.appendChild(btnExcluir);
+        });
+
+    }catch (error){
+        console.error("Erro ao buscar empresas:", error);
+        document.querySelector('#dataTable tbody').innerHTML = `<tr><td colspan="5">Erro ao buscar empresas: ${error.message}</td></tr>`;
+    }
 }
 
-// Adicionar eventos de click aos botões dos cartões
 document.addEventListener('DOMContentLoaded', () => {
-    carregarEmpresas(); // Carrega as empresas quando a página é totalmente carregada
+    carregarEmpresas(); 
 
-    // Captura os botões dos cartões
-    const btnNovaEmpresa = document.getElementById('btnNovaEmpresa');
-    const btnEditarEmpresa = document.getElementById('btnEditarEmpresa');
-    const btnVerEmpresa = document.getElementById('btnVerEmpresa');
-    const btnExcluirEmpresa = document.getElementById('btnExcluirEmpresa');
+    const btnNovaEmpresaTopo = document.getElementById('btnNovaEmpresaTopo');
+    if (btnNovaEmpresaTopo) {
+        btnNovaEmpresaTopo.addEventListener('click', novaEmpresa);
+    }
 
-    if (btnNovaEmpresa) {
-        btnNovaEmpresa.addEventListener('click', novaEmpresa);
+    const campoBusca = document.getElementById('campoBuscaEmpresa');
+    const btnBuscar = document.getElementById('btnBuscarEmpresa');
+    if (btnBuscar) {
+        btnBuscar.addEventListener('click', buscarEmpresas);
     }
-    // Para editar/ver/excluir pelos cartões, precisaríamos de uma forma de selecionar a empresa primeiro,
-    // por exemplo, um campo de ID ou uma seleção na tabela.
-    // Por enquanto, esses botões podem abrir modais genéricos ou funcionar em conjunto com a seleção de linha.
-    // Os botões da tabela são mais diretos para Editar/Excluir por ID.
-    if (btnEditarEmpresa) {
-         btnEditarEmpresa.addEventListener('click', () => alert('Selecione uma empresa na tabela para editar.'));
-    }
-    if (btnVerEmpresa) {
-         btnVerEmpresa.addEventListener('click', () => alert('Selecione uma empresa na tabela para ver detalhes.'));
-    }
-    if (btnExcluirEmpresa) {
-         btnExcluirEmpresa.addEventListener('click', () => alert('Selecione uma empresa na tabela para excluir.'));
+
+    if (campoBusca) {
+        campoBusca.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                buscarEmpresas();
+            }
+        });
     }
 });
