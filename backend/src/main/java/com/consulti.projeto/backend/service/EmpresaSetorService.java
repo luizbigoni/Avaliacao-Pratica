@@ -103,4 +103,17 @@ public class EmpresaSetorService {
                 .map(es -> new SetorDTO(es.getSetor()))
                 .collect(Collectors.toList());
     }
+
+    public List<EmpresaSetor> buscarVinculosPorFiltro(String empresaTermo, String setorTermo) {
+        // Se ambos os termos forem nulos ou vazios, retorna todos os vínculos
+        if ((empresaTermo == null || empresaTermo.isEmpty()) && (setorTermo == null || setorTermo.isEmpty())) {
+            return empresaSetorRepository.findAll();
+        }
+
+        // Passa null para os termos que estiverem vazios, para que a @Query possa tratá-los como opcionais
+        String finalEmpresaTerm = (empresaTermo != null && !empresaTermo.isEmpty()) ? empresaTermo : null;
+        String finalSetorTerm = (setorTermo != null && !setorTermo.isEmpty()) ? setorTermo : null;
+
+        return empresaSetorRepository.findByEmpresaRazaoSocialOrCnpjAndSetorDescricao(finalEmpresaTerm, finalSetorTerm);
+    }
 }

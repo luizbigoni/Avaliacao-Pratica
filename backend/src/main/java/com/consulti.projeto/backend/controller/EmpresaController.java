@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/empresas")
@@ -15,17 +16,31 @@ public class EmpresaController {
     @Autowired
     private EmpresaService empresaService;
 
+//    @PostMapping("/novo")
+//    public ResponseEntity<Empresa> createEmpresa(@RequestBody Empresa empresa){
+//        try{
+//            Empresa novaEmpresa = empresaService.create(empresa);
+//            return new ResponseEntity<>(novaEmpresa, HttpStatus.CREATED);
+//        }catch(IllegalArgumentException e){
+//            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+//        }catch(Exception e){
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
     @PostMapping("/novo")
-    public ResponseEntity<Empresa> createEmpresa(@RequestBody Empresa empresa){
-        try{
-            Empresa novaEmpresa = empresaService.create(empresa);
-            return new ResponseEntity<>(novaEmpresa, HttpStatus.CREATED);
-        }catch(IllegalArgumentException e){
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }catch(Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> createEmpresa(@RequestBody Empresa empresa){
+        try {
+            Empresa nova = empresaService.create(empresa);
+            return new ResponseEntity<>(nova, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage())); // <- garante JSON válido
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Erro inesperado ao cadastrar empresa."));
         }
     }
+
 
     @GetMapping("/listar")
     public ResponseEntity<List<Empresa>> getAllEmpresas(){
@@ -75,4 +90,14 @@ public class EmpresaController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Empresa>> buscarEmpresas(@RequestParam("query") String query) {
+        List<Empresa> empresas = empresaService.buscarPorRazaoSocialOuCnpj(query);
+        if (empresas.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(empresas, HttpStatus.OK);
+    }
+
 }

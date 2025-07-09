@@ -1,6 +1,7 @@
 package com.consulti.projeto.backend.controller;
 
 import com.consulti.projeto.backend.dto.EmpresaDTO;
+import com.consulti.projeto.backend.dto.EmpresaSetorResponseDTO;
 import com.consulti.projeto.backend.dto.SetorDTO;
 import com.consulti.projeto.backend.model.EmpresaSetor;
 import com.consulti.projeto.backend.service.EmpresaSetorService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/empresas_setores")
@@ -84,6 +86,27 @@ public class EmpresaSetorController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/relatorio")
+    public ResponseEntity<List<EmpresaSetorResponseDTO>> gerarRelatorioFiltrado(
+            @RequestParam(required = false) String empresaTermo,
+            @RequestParam(required = false) String setorTermo) {
+        try {
+            // Este método do Service agora usa o método @Query do Repository
+            List<EmpresaSetor> vinculos = empresaSetorService.buscarVinculosPorFiltro(empresaTermo, setorTermo);
+
+            if (vinculos.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            List<EmpresaSetorResponseDTO> vinculosDTO = vinculos.stream()
+                    .map(EmpresaSetorResponseDTO::new)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(vinculosDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Erro ao gerar relatório filtrado: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

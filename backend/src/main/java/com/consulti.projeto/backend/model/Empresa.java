@@ -14,7 +14,7 @@ public class Empresa {
     private Long id;
     @Column(name = "razao_social", nullable = false)
     private String razaoSocial;
-    @Column(name = "nome_fantasia")
+    @Column(name = "nome_fantasia", nullable = false)
     private String nomeFantasia;
     @Column(name = "cnpj", nullable = false, unique = true)
     private String cnpj;
