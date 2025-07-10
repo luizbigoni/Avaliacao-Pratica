@@ -18,7 +18,6 @@ public class EmpresaDTO {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -26,7 +25,6 @@ public class EmpresaDTO {
     public String getRazaoSocial() {
         return razaoSocial;
     }
-
     public void setRazaoSocial(String razaoSocial) {
         this.razaoSocial = razaoSocial;
     }
@@ -34,7 +32,6 @@ public class EmpresaDTO {
     public String getNomeFantasia() {
         return nomeFantasia;
     }
-
     public void setNomeFantasia(String nomeFantasia) {
         this.nomeFantasia = nomeFantasia;
     }
@@ -42,7 +39,6 @@ public class EmpresaDTO {
     public String getCnpj() {
         return cnpj;
     }
-
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
     }

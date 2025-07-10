@@ -48,13 +48,13 @@ public class SetorController {
 //            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
 //    }
-    @PutMapping("/editar/{id}") // <<-- MUDANÇA AQUI: Recebe ID do path e Setor no corpo
+    @PutMapping("/editar/{id}")
     public ResponseEntity<Setor> updateSetor(@PathVariable Long id, @RequestBody Setor setor) {
         try {
-            Setor setorAtualizado = setorService.update(id, setor); // Passa o ID e o objeto Setor
+            Setor setorAtualizado = setorService.update(id, setor);
             return new ResponseEntity<>(setorAtualizado, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Setor não encontrado
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,19 +72,19 @@ public class SetorController {
         }
     }
 
-    @GetMapping("/buscarId/{id}") // <<-- ESTE É O ENDPOINT NECESSÁRIO
+    @GetMapping("/buscarId/{id}")
     public ResponseEntity<Setor> buscarSetorId(@PathVariable Long id) {
         return setorService.buscaPorId(id)
                 .map(setor -> new ResponseEntity<>(setor, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/buscar") // <<-- ESTE É O ENDPOINT QUE O FRONTEND ESTÁ CHAMANDO
+    @GetMapping("/buscar")
     public ResponseEntity<List<Setor>> buscarSetores(@RequestParam("query") String query) {
         try {
-            List<Setor> setores = setorService.buscarPorDescricao(query); // Chama o serviço para buscar
+            List<Setor> setores = setorService.buscarPorDescricao(query);
             if (setores.isEmpty()) {
-                return new ResponseEntity<>(setores, HttpStatus.OK); // Retorna 200 OK com lista vazia
+                return new ResponseEntity<>(setores, HttpStatus.OK);
             }
             return new ResponseEntity<>(setores, HttpStatus.OK);
         } catch (Exception e) {

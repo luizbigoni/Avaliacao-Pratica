@@ -75,12 +75,26 @@ public class EmpresaSetorController {
         }
     }
 
+//    @GetMapping("/buscaSetoresPorEmpresa/{empresaId}")
+//    public ResponseEntity<List<SetorDTO>> listarSetoresPorEmpresa(@PathVariable Long empresaId) {
+//        try {
+//            List<SetorDTO> setores = empresaSetorService.listarSetoresPorEmpresa(empresaId);
+//            if (setores.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//            }
+//            return new ResponseEntity<>(setores, HttpStatus.OK);
+//        } catch (IllegalArgumentException e) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
     @GetMapping("/buscaSetoresPorEmpresa/{empresaId}")
     public ResponseEntity<List<SetorDTO>> listarSetoresPorEmpresa(@PathVariable Long empresaId) {
         try {
             List<SetorDTO> setores = empresaSetorService.listarSetoresPorEmpresa(empresaId);
             if (setores.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(setores, HttpStatus.OK);
             }
             return new ResponseEntity<>(setores, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -91,19 +105,14 @@ public class EmpresaSetorController {
     }
 
     @GetMapping("/relatorio")
-    public ResponseEntity<List<EmpresaSetorResponseDTO>> gerarRelatorioFiltrado(
-            @RequestParam(required = false) String empresaTermo,
-            @RequestParam(required = false) String setorTermo) {
+    public ResponseEntity<List<EmpresaSetorResponseDTO>> gerarRelatorioFiltrado(@RequestParam(required = false) String empresaTermo, @RequestParam(required = false) String setorTermo) {
         try {
-            // Este método do Service agora usa o método @Query do Repository
             List<EmpresaSetor> vinculos = empresaSetorService.buscarVinculosPorFiltro(empresaTermo, setorTermo);
 
             if (vinculos.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            List<EmpresaSetorResponseDTO> vinculosDTO = vinculos.stream()
-                    .map(EmpresaSetorResponseDTO::new)
-                    .collect(Collectors.toList());
+            List<EmpresaSetorResponseDTO> vinculosDTO = vinculos.stream().map(EmpresaSetorResponseDTO::new).collect(Collectors.toList());
             return new ResponseEntity<>(vinculosDTO, HttpStatus.OK);
         } catch (Exception e) {
             System.err.println("Erro ao gerar relatório filtrado: " + e.getMessage());

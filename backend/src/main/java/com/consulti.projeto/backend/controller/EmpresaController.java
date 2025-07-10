@@ -33,14 +33,11 @@ public class EmpresaController {
             Empresa nova = empresaService.create(empresa);
             return new ResponseEntity<>(nova, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", e.getMessage())); // <- garante JSON válido
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Erro inesperado ao cadastrar empresa."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Erro inesperado ao cadastrar empresa."));
         }
     }
-
 
     @GetMapping("/listar")
     public ResponseEntity<List<Empresa>> getAllEmpresas(){

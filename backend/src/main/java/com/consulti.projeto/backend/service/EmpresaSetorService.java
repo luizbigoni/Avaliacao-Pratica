@@ -44,7 +44,6 @@ public class EmpresaSetorService {
         if (empresaSetorRepository.existsById(id)) {
             throw new IllegalArgumentException("Vínculo entre Empresa " + empresaId + " e Setor " + setorId + " já existe.");
         }
-
         EmpresaSetor empresaSetor = new EmpresaSetor(empresa, setor);
         return empresaSetorRepository.save(empresaSetor);
     }
@@ -89,9 +88,7 @@ public class EmpresaSetorService {
             throw new IllegalArgumentException("Setor com ID " + setorId + " não encontrado.");
         }
         List<EmpresaSetor> vinculos = empresaSetorRepository.findBySetorId(setorId);
-        return vinculos.stream()
-                .map(es -> new EmpresaDTO(es.getEmpresa()))
-                .collect(Collectors.toList());
+        return vinculos.stream().map(es -> new EmpresaDTO(es.getEmpresa())).collect(Collectors.toList());
     }
 
     public List<SetorDTO> listarSetoresPorEmpresa(Long empresaId) {
@@ -99,21 +96,16 @@ public class EmpresaSetorService {
             throw new IllegalArgumentException("Empresa com ID " + empresaId + " não encontrada.");
         }
         List<EmpresaSetor> vinculos = empresaSetorRepository.findByEmpresaId(empresaId);
-        return vinculos.stream()
-                .map(es -> new SetorDTO(es.getSetor()))
-                .collect(Collectors.toList());
+        return vinculos.stream().map(es -> new SetorDTO(es.getSetor())).collect(Collectors.toList());
     }
 
     public List<EmpresaSetor> buscarVinculosPorFiltro(String empresaTermo, String setorTermo) {
-        // Se ambos os termos forem nulos ou vazios, retorna todos os vínculos
         if ((empresaTermo == null || empresaTermo.isEmpty()) && (setorTermo == null || setorTermo.isEmpty())) {
             return empresaSetorRepository.findAll();
         }
 
-        // Passa null para os termos que estiverem vazios, para que a @Query possa tratá-los como opcionais
         String finalEmpresaTerm = (empresaTermo != null && !empresaTermo.isEmpty()) ? empresaTermo : null;
         String finalSetorTerm = (setorTermo != null && !setorTermo.isEmpty()) ? setorTermo : null;
-
         return empresaSetorRepository.findByEmpresaRazaoSocialOrCnpjAndSetorDescricao(finalEmpresaTerm, finalSetorTerm);
     }
 }

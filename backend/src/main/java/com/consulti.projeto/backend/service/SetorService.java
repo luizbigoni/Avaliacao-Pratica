@@ -1,6 +1,5 @@
 package com.consulti.projeto.backend.service;
 
-import com.consulti.projeto.backend.model.Empresa;
 import com.consulti.projeto.backend.model.Setor;
 import com.consulti.projeto.backend.repository.SetorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +28,13 @@ public class SetorService {
 //        }
 //        return setorRepository.save(setor);
 //    }
-    public Setor update(Long id, Setor setorAtualizado) { // Recebe o ID do path e o objeto atualizado
-        // 1. Encontra o Setor existente no banco de dados
+    public Setor update(Long id, Setor setorAtualizado) {
         Optional<Setor> setorOpt = setorRepository.findById(id);
         if (setorOpt.isEmpty()) {
             throw new IllegalArgumentException("Setor não encontrado para atualização.");
         }
-        Setor setorExistente = setorOpt.get(); // O setor existente do banco
-
-        // 2. Atualiza APENAS as propriedades do setor existente com os dados que vieram na requisição
+        Setor setorExistente = setorOpt.get();
         setorExistente.setDescricao(setorAtualizado.getDescricao());
-
-        // 3. Salva a entidade existente (o Hibernate fará o merge e manterá os vínculos)
         return setorRepository.save(setorExistente);
     }
 
