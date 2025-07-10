@@ -1,5 +1,3 @@
-// assets/js/relatorios.js
-
 const API_BASE_URL = 'http://localhost:8080';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const noResultsMessage = document.getElementById('noResultsMessage');
 
     async function gerarRelatorio() {
-        // MUDANÇA AQUI: Aplicar toLowerCase() e adicionar wildcards '%' no frontend
         const empresaTermoRaw = filtroEmpresaNomeInput.value.trim();
         const setorTermoRaw = filtroSetorDescricaoInput.value.trim();
 
@@ -26,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             let url = `${API_BASE_URL}/empresas_setores/relatorio?`;
             
-            // Passa os termos JÁ PROCESSADOS para o backend
             if (empresaTermoFinal) {
                 url += `empresaTermo=${encodeURIComponent(empresaTermoFinal)}&`;
             }
@@ -74,20 +70,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("Erro ao gerar relatório:", error);
-            alert(`Erro ao gerar relatório: ${error.message}`);
-            noResultsMessage.textContent = `Erro ao carregar relatório: ${error.message}`;
+            //alert(`Erro ao gerar relatório: ${error.message}`);
+            //noResultsMessage.textContent = `Erro ao carregar relatório: ${error.message}`;
+            noResultsMessage.textContent = `Empresa ou setor inexistente`;
             noResultsMessage.style.display = 'block';
         }
     }
 
-    // Função para limpar os campos de filtro
     function limparFiltros() {
         filtroEmpresaNomeInput.value = '';
         filtroSetorDescricaoInput.value = '';
         gerarRelatorio();
     }
 
-    // Inicialização
     btnGerarRelatorio.addEventListener('click', gerarRelatorio);
     btnLimparFiltros.addEventListener('click', limparFiltros);
     

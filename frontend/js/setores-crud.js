@@ -89,16 +89,14 @@ async function excluirSetor(id) {
 }
 
 async function buscarSetores() {
-    const termoBusca = document.getElementById('campoBuscaSetor').value.trim(); // Pega o valor do campo de busca
+    const termoBusca = document.getElementById('campoBuscaSetor').value.trim();
     let url;
 
     if (termoBusca) {
-        // Se há um termo de busca, chame o novo endpoint de busca no backend
         url = `${API_BASE_URL}/setores/buscar?query=${encodeURIComponent(termoBusca)}`;
     } else {
-        // Se o campo de busca estiver vazio, carregue todos os setores (usando a função carregarSetores)
-        carregarSetores(); // Chamada direta para recarregar a lista completa
-        return; // Sai da função, pois carregarSetores já fará o trabalho
+        carregarSetores(); 
+        return;
     }
 
     try {
@@ -107,15 +105,15 @@ async function buscarSetores() {
         if (!response.ok) {
             if (response.status === 204) {
                 console.log('Nenhum setor encontrado para o termo de busca.');
-                document.querySelector('#dataTable tbody').innerHTML = '<tr><td colspan="3">Nenhum setor encontrado.</td></tr>'; // 3 colunas
+                document.querySelector('#dataTable tbody').innerHTML = '<tr><td colspan="3">Nenhum setor encontrado.</td></tr>';
                 return;
             }
             throw new Error(`Erro HTTP ao buscar setores! Status: ${response.status}`);
         }
         
-        const setores = await response.json(); // Converte a resposta para JSON
+        const setores = await response.json(); 
         const tbody = document.querySelector('#dataTable tbody');
-        tbody.innerHTML = ''; // Limpa o corpo da tabela
+        tbody.innerHTML = ''; 
 
         if (setores.length === 0) {
             document.querySelector('#dataTable tbody').innerHTML = '<tr><td colspan="3">Nenhum setor encontrado.</td></tr>';
@@ -125,7 +123,7 @@ async function buscarSetores() {
         setores.forEach(setor => {
             const row = tbody.insertRow();
             row.insertCell().textContent = setor.id;
-            row.insertCell().textContent = setor.descricao; // Campo correto é 'descricao'
+            row.insertCell().textContent = setor.descricao; 
 
             const acoesCell = row.insertCell();
 
@@ -145,10 +143,9 @@ async function buscarSetores() {
 
     } catch (error) {
         console.error("Erro ao buscar setores:", error);
-        document.querySelector('#dataTable tbody').innerHTML = `<tr><td colspan="3">Erro ao buscar setores: ${error.message}</td></tr>`; // 3 colunas
+        document.querySelector('#dataTable tbody').innerHTML = `<tr><td colspan="3">Erro ao buscar setores: ${error.message}</td></tr>`; 
     }
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarSetores(); 

@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error("Erro ao carregar detalhes da empresa:", error);
             alert(`Erro ao carregar detalhes da empresa: ${error.message}`);
-            window.location.href = 'empresas.html'; // Em caso de erro, voltar para a lista
+            window.location.href = 'empresas.html'; 
         }
     }
 
