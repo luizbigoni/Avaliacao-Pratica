@@ -1,0 +1,2 @@
+Backend foi realizado na linguagem java, feito no Intellij IDEA.
+Frontend foi realizado nas linguagens HTML, CSS e Javascript, feito no vscode. Usei a extensão Live Server para o desenvolvimento web.
